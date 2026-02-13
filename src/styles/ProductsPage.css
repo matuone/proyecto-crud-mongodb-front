@@ -1,0 +1,81 @@
+/* Estilos para la página de productos */
+.products-root {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f2027 0%, #2c5364 50%, #6a11cb 100%);
+  color: #fff;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  padding: 32px 0;
+}
+
+.products-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  text-shadow: 0 2px 8px #0008;
+}
+
+.products-filter {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.products-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  align-items: stretch;
+  margin-top: 24px;
+}
+
+.product-card {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px #0003;
+  padding: 1rem 1.6rem;
+  width: 280px;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.3rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1.5px solid #fff2;
+  position: relative;
+}
+
+.product-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 8px 32px #0005;
+  border-color: #6a11cb;
+}
+
+.product-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.product-price {
+  font-size: 1.1rem;
+  color: #ffd700;
+  margin: 0;
+  font-weight: 600;
+}
+
+.product-category {
+  font-size: 1rem;
+  color: #6a11cb;
+  margin-bottom: 0.5rem;
+}
+
+.product-desc {
+  font-size: 0.95rem;
+  color: #e0e0e0;
+  margin: 0;
+  line-height: 1.35;
+}

@@ -1,5 +1,8 @@
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { motion, AnimatePresence } from 'framer-motion';
+import '../styles/ProductsPage.css';
 const API_URL = import.meta.env.VITE_API_URL;
 import { useAuth } from '../auth/auth.jsx';
 
@@ -17,9 +20,7 @@ export default function ProductsPage() {
     setError(null);
     const fetchProducts = async () => {
       try {
-        const res = await axios.get(`${API_URL}/productos`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(`${API_URL}/productos`);
         setProducts(res.data);
       } catch (err) {
         setError('Error al cargar productos');
@@ -27,9 +28,7 @@ export default function ProductsPage() {
     };
     const fetchCategories = async () => {
       try {
-        const res = await axios.get(`${API_URL}/categorias`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(`${API_URL}/categorias`);
         setCategories(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         setError('Error al cargar categorías');
@@ -40,32 +39,62 @@ export default function ProductsPage() {
 
   const filteredProducts = Array.isArray(products)
     ? (selectedCategory
-      ? products.filter(p => p.categoria === selectedCategory)
+      ? products.filter(p => {
+        // Soporta categoria como string o como objeto
+        if (!p.categoria) return false;
+        if (typeof p.categoria === 'string') return p.categoria === selectedCategory;
+        if (typeof p.categoria === 'object' && p.categoria.nombre) return p.categoria.nombre === selectedCategory;
+        return false;
+      })
       : products)
     : [];
 
-  if (loading) return <div style={{ padding: 32 }}>Cargando productos...</div>;
-  if (error) return <div style={{ color: 'red', padding: 32 }}>{error}</div>;
+  if (loading) return <div className="products-root" style={{ padding: 32 }}>Cargando productos...</div>;
+  if (error) return <div className="products-root" style={{ color: 'red', padding: 32 }}>{error}</div>;
 
   return (
-    <div style={{ padding: 32 }}>
-      <h2>Productos</h2>
-      <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)}>
-        <option value="">Todas las categorías</option>
-        {(Array.isArray(categories) ? categories : []).map(cat => (
-          <option key={cat._id} value={cat.nombre}>{cat.nombre}</option>
-        ))}
-      </select>
-      <ul style={{ marginTop: 24 }}>
-        {(Array.isArray(filteredProducts) ? filteredProducts : []).map(prod => (
-          <li key={prod._id}>
-            <strong>{prod.nombre}</strong>
-            {typeof prod.precio !== 'undefined' && ` - $${prod.precio}`}
-            {prod.categoria && ` (${prod.categoria})`}
-            {prod.descripcion && <div style={{ fontSize: '0.95em', color: '#666' }}>{prod.descripcion}</div>}
-          </li>
-        ))}
-      </ul>
+    <div className="products-root">
+      <div className="products-title">Productos</div>
+      <div className="products-filter">
+        <select
+          value={selectedCategory}
+          onChange={e => setSelectedCategory(e.target.value)}
+          style={{ padding: '0.5em 1em', borderRadius: 8, fontSize: '1rem', border: '1.5px solid #fff6', background: '#232526', color: '#fff', minWidth: 180 }}
+        >
+          <option value="">Todas las categorías</option>
+          {(Array.isArray(categories) ? categories : []).map(cat => (
+            <option key={cat._id} value={cat.nombre}>{cat.nombre}</option>
+          ))}
+        </select>
+      </div>
+      <div className="products-list">
+        <AnimatePresence>
+          {(Array.isArray(filteredProducts) ? filteredProducts : []).map(prod => {
+            // Asegurarse de que los campos sean string o number
+            const nombre = typeof prod.nombre === 'object' ? JSON.stringify(prod.nombre) : prod.nombre;
+            const precio = typeof prod.precio === 'object' ? JSON.stringify(prod.precio) : prod.precio;
+            const descripcion = typeof prod.descripcion === 'object' ? JSON.stringify(prod.descripcion) : prod.descripcion;
+            return (
+              <motion.div
+                className="product-card"
+                key={prod._id}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 40 }}
+                transition={{ duration: 0.35, type: 'spring', stiffness: 80 }}
+              >
+                <div className="product-name">{nombre}</div>
+                {typeof precio !== 'undefined' && (
+                  <div className="product-price">${precio}</div>
+                )}
+                {descripcion && (
+                  <div className="product-desc">{descripcion}</div>
+                )}
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
