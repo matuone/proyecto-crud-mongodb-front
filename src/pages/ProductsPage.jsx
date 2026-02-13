@@ -1,12 +1,14 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../styles/ProductsPage.css';
 const API_URL = import.meta.env.VITE_API_URL;
 import { useAuth } from '../auth/auth.jsx';
 
 export default function ProductsPage() {
+  const navigate = useNavigate();
   const { token } = useAuth();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -54,6 +56,7 @@ export default function ProductsPage() {
 
   return (
     <div className="products-root">
+      <button className="back-home-btn" onClick={() => navigate('/')}>← Volver</button>
       <div className="products-title">Productos</div>
       <div className="products-filter">
         <select

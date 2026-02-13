@@ -5,6 +5,7 @@
   color: #fff;
   font-family: 'Segoe UI', Arial, sans-serif;
   padding: 32px 0;
+  position: relative;
 }
 
 .products-title {
@@ -78,4 +79,25 @@
   color: #e0e0e0;
   margin: 0;
   line-height: 1.35;
+}
+
+.back-home-btn {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  padding: 0.7em 1.5em;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1.5px solid #fff4;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.back-home-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: #6a11cb;
+  transform: scale(1.05);
 }
