@@ -7,94 +7,93 @@
 
 ## ✨ Descripción
 
-Frontend moderno en React + Vite para el proyecto final del curso Backend. Permite autenticación (admin, usuario, invitado), listado y filtrado de productos por categorías, y consumo seguro de una API protegida con JWT.
+Frontend en React + Vite para gestionar productos con autenticación JWT.
+Incluye login modal, persistencia de sesión, rutas protegidas y CRUD de productos desde la vista principal.
 
 ---
 
-## 📦 Estructura del proyecto
+## ✅ Funcionalidades finales
 
+- Login con popup (`usuario + contraseña`) y toggle de visibilidad de contraseña.
+- Sesión persistida en `localStorage` (`token` + `user`).
+- Home dinámico:
+	- Sin sesión: botón de login.
+	- Con sesión: muestra “Sesión iniciada” y permite ir directo a productos.
+	- Invitado: permite entrar a productos en modo solo lectura.
+- Vista de productos con:
+	- listado y filtro por categoría,
+	- crear producto (modal),
+	- editar producto (modal),
+	- eliminar producto (confirmación modal),
+	- refresco automático del listado tras crear/eliminar.
+
+---
+
+## 🔐 Acceso y permisos
+
+- `/productos` es accesible para invitados en modo solo lectura.
+- El CRUD (crear, editar, eliminar) solo está habilitado cuando hay sesión activa (token JWT).
+- `/login` es ruta solo para invitados (`GuestOnly`).
+	- Si ya hay sesión, redirige a `/productos`.
+
+### Creación de cuenta
+
+Este frontend no incluye pantalla de registro.
+Para crear una cuenta, debes hacerlo desde el backend usando Bruno con la request correspondiente.
+La llamada exacta está documentada en el README del backend.
+
+---
+
+## 🧱 Modelo usado para crear productos
+
+El frontend envía este payload al backend en `POST /productos`:
+
+```json
+{
+	"nombre": "Notebook Lenovo",
+	"descripcion": "14 pulgadas, 8GB RAM",
+	"precio": 350000,
+	"stock": 10,
+	"categoria": "ID_DE_LA_CATEGORIA"
+}
 ```
-proyecto-crud-mongodb-front/
-├── src/
-│   ├── app/           # App principal y entrypoint
-│   ├── auth/          # Contexto y lógica de autenticación
-│   ├── components/    # Componentes reutilizables (ej: LoginPopup)
-│   ├── pages/         # Vistas principales (Home, ProductsPage)
-│   ├── router/        # Rutas de la app
-│   ├── services/      # Lógica de consumo de API
-│   └── styles/        # Archivos CSS
-├── .env.example       # Variables de entorno frontend
-├── package.json       # Dependencias y scripts
-└── README.md          # Documentación
+
+---
+
+## ⚙️ Variables de entorno
+
+Archivo `.env.example`:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+Pasos:
+
+1. Copiar `.env.example` a `.env`.
+2. Ajustar `VITE_API_URL` según tu backend.
+
+---
+
+## ▶️ Instalación y ejecución
+
+```bash
+git clone https://github.com/matuone/proyecto-crud-mongodb-front.git
+cd proyecto-crud-mongodb-front
+npm install
+npm run dev
 ```
 
 ---
 
-## ⚙️ Instalación y uso
+## 🧼 Revisión de seguridad en frontend
 
-1. **Clona el repositorio:**
-
-	```bash
-	git clone https://github.com/matuone/proyecto-crud-mongodb-front.git
-	cd proyecto-crud-mongodb-front
-	```
-
-2. **Instala dependencias:**
-
-	```bash
-	npm install
-	```
-
-3. **Configura las variables de entorno:**
-
-	- Copia `.env.example` a `.env` y ajusta la URL de tu backend:
-	  ```bash
-	  cp .env.example .env
-	  # Edita .env y pon la URL real de tu backend
-	  ```
-
-4. **Inicia la app en modo desarrollo:**
-
-	```bash
-	npm run dev
-	```
-
----
-
-## 🔗 Conexión con el backend
-
-- El frontend espera que el backend exponga endpoints REST bajo la URL definida en `VITE_API_URL`.
-- Ejemplo de variable en `.env`:
-  ```env
-  VITE_API_URL=http://localhost:5000/api
-  ```
-- El backend debe tener configuradas sus propias variables de entorno (ver `.env.example` en el backend).
-
----
-
-## 🛡️ Autenticación y roles
-
-- Login con popup animado (Material UI): elige entre **Administrador**, **Usuario** o **Invitado**.
-- El token JWT se almacena en localStorage y se envía automáticamente en cada request.
-- El acceso a productos requiere estar autenticado.
-
----
-
-## 🛒 Funcionalidades principales
-
-- Listado de productos y filtrado por categoría.
-- Interfaz moderna, responsiva y con efectos visuales.
-- Separación clara de lógica, componentes y estilos.
-
----
-
-## 📝 Notas
-
-- No subas tu archivo `.env` real al repositorio (ya está en `.gitignore`).
-- Si tienes dudas, revisa los comentarios en el código y este README.
+- Sin `console.log`, `console.warn` ni `console.error` en `src/`.
+- Endpoints configurados por variable de entorno (`VITE_API_URL`) en los flujos principales.
+- Acciones sensibles del CRUD dependen de sesión activa (token JWT).
 
 ---
 
 ## 👨‍💻 Autor
 
-- Proyecto realizado por Matias Castells para el curso Backend 2026.
+Proyecto realizado por Matias Castells.

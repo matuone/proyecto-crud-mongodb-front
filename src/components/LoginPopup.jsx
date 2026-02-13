@@ -12,6 +12,8 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function LoginPopup({ open, onClose }) {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -42,7 +44,7 @@ function LoginPopup({ open, onClose }) {
     setError(null);
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/usuarios/login', { email, contraseña: password });
+      const res = await axios.post(`${API_URL}/usuarios/login`, { email, contraseña: password });
       if (res.data.token) {
         login(res.data.token, res.data.usuario);
         onClose && onClose();
