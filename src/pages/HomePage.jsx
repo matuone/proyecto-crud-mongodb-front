@@ -11,7 +11,7 @@ export default function HomePage() {
   const [typed, setTyped] = useState('');
   const fullText = 'Bienvenido a la UI de usuario para nuestro proyecto backend.';
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { logout } = useAuth();
 
   useEffect(() => {
     setTyped('');
@@ -41,7 +41,7 @@ export default function HomePage() {
         <button
           className="home-btn secondary"
           onClick={() => {
-            login('guest-token');
+            logout();
             navigate('/productos');
           }}
         >

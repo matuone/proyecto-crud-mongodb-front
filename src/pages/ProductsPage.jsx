@@ -11,19 +11,15 @@ import { useAuth } from '../auth/auth.jsx';
 
 export default function ProductsPage() {
   const navigate = useNavigate();
-  const { token, user, logout } = useAuth();
+  const { token, logout } = useAuth();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const isAdmin = user?.rol === 'admin';
-
-  // Debug: verificar estado de autenticación
-  console.log('ProductsPage - User:', user);
-  console.log('ProductsPage - isAdmin:', isAdmin);
-  console.log('ProductsPage - Token:', token);
+  const hasSession = Boolean(token);
+  const canManageProducts = hasSession;
 
   const handleLogout = () => {
     logout();
@@ -65,11 +61,13 @@ export default function ProductsPage() {
     : [];
 
   const handleEdit = (productId) => {
+    if (!canManageProducts) return;
     console.log('Editar producto:', productId);
     // TODO: Implementar edición
   };
 
   const handleDelete = (productId) => {
+    if (!canManageProducts) return;
     console.log('Eliminar producto:', productId);
     // TODO: Implementar eliminación
   };
@@ -80,27 +78,29 @@ export default function ProductsPage() {
   return (
     <div className="products-root">
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 20, marginBottom: 16, position: 'relative' }}>
-        <button
-          className="logout-btn"
-          onClick={handleLogout}
-          style={{
-            padding: '0.7em 1.5em',
-            fontSize: '1rem',
-            fontWeight: 500,
-            color: '#fff',
-            background: 'linear-gradient(90deg, #7c3aed 60%, #2563eb 100%)',
-            border: '1.5px solid #fff4',
-            borderRadius: 8,
-            cursor: 'pointer',
-            transition: 'background 0.2s, border-color 0.2s, transform 0.2s',
-            boxShadow: '0 4px 16px #7c3aed33',
-            outline: 'none',
-          }}
-          onMouseOver={e => e.currentTarget.style.background = 'linear-gradient(90deg, #6d28d9 60%, #1e40af 100%)'}
-          onMouseOut={e => e.currentTarget.style.background = 'linear-gradient(90deg, #7c3aed 60%, #2563eb 100%)'}
-        >
-          Cerrar sesión
-        </button>
+        {hasSession && (
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+            style={{
+              padding: '0.7em 1.5em',
+              fontSize: '1rem',
+              fontWeight: 500,
+              color: '#fff',
+              background: 'linear-gradient(90deg, #7c3aed 60%, #2563eb 100%)',
+              border: '1.5px solid #fff4',
+              borderRadius: 8,
+              cursor: 'pointer',
+              transition: 'background 0.2s, border-color 0.2s, transform 0.2s',
+              boxShadow: '0 4px 16px #7c3aed33',
+              outline: 'none',
+            }}
+            onMouseOver={e => e.currentTarget.style.background = 'linear-gradient(90deg, #6d28d9 60%, #1e40af 100%)'}
+            onMouseOut={e => e.currentTarget.style.background = 'linear-gradient(90deg, #7c3aed 60%, #2563eb 100%)'}
+          >
+            Cerrar sesión
+          </button>
+        )}
         <button className="back-home-btn" style={{ position: 'static', margin: 0 }} onClick={() => navigate('/')}>← Volver</button>
       </div>
       <div className="products-title">Productos</div>
@@ -132,7 +132,7 @@ export default function ProductsPage() {
                 exit={{ opacity: 0, y: 40 }}
                 transition={{ duration: 0.35, type: 'spring', stiffness: 80 }}
               >
-                <div className="product-id">{prod._id}</div>
+                {hasSession && <div className="product-id">{prod._id}</div>}
                 <div className="product-name">{nombre}</div>
                 {typeof precio !== 'undefined' && (
                   <div className="product-price">${precio}</div>
@@ -140,10 +140,12 @@ export default function ProductsPage() {
                 {descripcion && (
                   <div className="product-desc">{descripcion}</div>
                 )}
-                <div className="product-actions">
-                  <button className="btn-edit" onClick={() => handleEdit(prod._id)}>✏️</button>
-                  <button className="btn-delete" onClick={() => handleDelete(prod._id)}>🗑️</button>
-                </div>
+                {canManageProducts && (
+                  <div className="product-actions">
+                    <button className="btn-edit" onClick={() => handleEdit(prod._id)}>✏️</button>
+                    <button className="btn-delete" onClick={() => handleDelete(prod._id)}>🗑️</button>
+                  </div>
+                )}
               </motion.div>
             );
           })}

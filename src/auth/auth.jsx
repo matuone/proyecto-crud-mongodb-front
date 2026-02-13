@@ -31,8 +31,11 @@ export const AuthProvider = ({ children }) => {
   });
 
   const login = (jwt, userData = null) => {
-    setToken(jwt);
+    if (!jwt) return;
+
     localStorage.setItem('token', jwt);
+    setToken(jwt);
+
     if (userData) {
       setUser(userData);
       localStorage.setItem('user', JSON.stringify(userData));
@@ -50,10 +53,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    setToken(null);
-    setUser(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    setToken(null);
+    setUser(null);
   };
 
   return (
