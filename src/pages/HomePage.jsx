@@ -1,5 +1,8 @@
 
+
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../auth/auth.jsx';
 import LoginPopup from '../components/LoginPopup';
 import '../styles/HomePage.css';
 
@@ -7,6 +10,8 @@ export default function HomePage() {
   const [showLogin, setShowLogin] = useState(false);
   const [typed, setTyped] = useState('');
   const fullText = 'Bienvenido a la UI de usuario para nuestro proyecto backend.';
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   useEffect(() => {
     let i = 0;
@@ -33,7 +38,13 @@ export default function HomePage() {
         <button className="home-btn primary" onClick={() => setShowLogin(true)}>
           Iniciar sesión
         </button>
-        <button className="home-btn secondary" onClick={() => setShowLogin(true)}>
+        <button
+          className="home-btn secondary"
+          onClick={() => {
+            login('guest-token');
+            navigate('/productos');
+          }}
+        >
           Entrar como invitado
         </button>
       </div>

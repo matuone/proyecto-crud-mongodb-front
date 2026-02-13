@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_URL;
 import { useAuth } from '../auth/auth.jsx';
 
 export default function ProductsPage() {
@@ -16,7 +17,7 @@ export default function ProductsPage() {
     setError(null);
     const fetchProducts = async () => {
       try {
-        const res = await axios.get('URL_DE_TU_API/productos', {
+        const res = await axios.get(`${API_URL}/productos`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setProducts(res.data);
@@ -26,10 +27,10 @@ export default function ProductsPage() {
     };
     const fetchCategories = async () => {
       try {
-        const res = await axios.get('URL_DE_TU_API/categorias', {
+        const res = await axios.get(`${API_URL}/categorias`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setCategories(res.data);
+        setCategories(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         setError('Error al cargar categorías');
       }
@@ -37,9 +38,11 @@ export default function ProductsPage() {
     Promise.all([fetchProducts(), fetchCategories()]).finally(() => setLoading(false));
   }, [token]);
 
-  const filteredProducts = selectedCategory
-    ? products.filter(p => p.categoria === selectedCategory)
-    : products;
+  const filteredProducts = Array.isArray(products)
+    ? (selectedCategory
+      ? products.filter(p => p.categoria === selectedCategory)
+      : products)
+    : [];
 
   if (loading) return <div style={{ padding: 32 }}>Cargando productos...</div>;
   if (error) return <div style={{ color: 'red', padding: 32 }}>{error}</div>;
@@ -49,14 +52,17 @@ export default function ProductsPage() {
       <h2>Productos</h2>
       <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)}>
         <option value="">Todas las categorías</option>
-        {categories.map(cat => (
+        {(Array.isArray(categories) ? categories : []).map(cat => (
           <option key={cat._id} value={cat.nombre}>{cat.nombre}</option>
         ))}
       </select>
       <ul style={{ marginTop: 24 }}>
-        {filteredProducts.map(prod => (
+        {(Array.isArray(filteredProducts) ? filteredProducts : []).map(prod => (
           <li key={prod._id}>
-            {prod.nombre} - ${prod.precio} ({prod.categoria})
+            <strong>{prod.nombre}</strong>
+            {typeof prod.precio !== 'undefined' && ` - $${prod.precio}`}
+            {prod.categoria && ` (${prod.categoria})`}
+            {prod.descripcion && <div style={{ fontSize: '0.95em', color: '#666' }}>{prod.descripcion}</div>}
           </li>
         ))}
       </ul>
