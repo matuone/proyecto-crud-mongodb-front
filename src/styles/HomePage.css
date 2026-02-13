@@ -1,0 +1,90 @@
+body {
+  margin: 0;
+}
+
+.home-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f2027 0%, #2c5364 50%, #6a11cb 100%);
+  color: #fff;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.home-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 2px 8px #0008;
+  white-space: pre;
+  font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+  overflow: hidden;
+  border-right: 0.15em solid #fff0;
+  position: relative;
+}
+
+.type-cursor {
+  display: inline-block;
+  width: 1ch;
+  color: #fff;
+  animation: blink 1s steps(1) infinite;
+  font-weight: 400;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+.home-subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 2.5rem;
+  text-shadow: 0 1px 4px #0006;
+}
+
+.home-btns {
+  display: flex;
+  gap: 1rem;
+}
+
+.home-btn {
+  padding: 0.7em 2em;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #0002;
+}
+
+.home-btn.primary {
+  background: linear-gradient(90deg, #0f2027 0%, #2c5364 100%);
+  color: #fff;
+}
+
+.home-btn.primary:hover {
+  background: linear-gradient(90deg, #2c5364 0%, #6a11cb 100%);
+  color: #fff;
+}
+
+.home-btn.secondary {
+  background: #fff2;
+  color: #fff;
+  border: 1.5px solid #fff6;
+}
+
+.home-btn.secondary:hover {
+  background: #6a11cb;
+  color: #fff;
+  border-color: #6a11cb;
+}
