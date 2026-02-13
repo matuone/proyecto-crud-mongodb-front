@@ -33,7 +33,7 @@ export default function HomePage() {
         {typed}
         <span className="type-cursor">|</span>
       </div>
-      <div className="home-subtitle">¡Accede como administrador, usuario o invitado!</div>
+      <div className="home-subtitle">Inicia sesión para tener acceso al CRUD de productos.</div>
       <div className="home-btns">
         <button className="home-btn primary" onClick={() => setShowLogin(true)}>
           Iniciar sesión
@@ -48,7 +48,7 @@ export default function HomePage() {
           Entrar como invitado
         </button>
       </div>
-      {showLogin && <LoginPopup onClose={() => setShowLogin(false)} />}
+      <LoginPopup open={showLogin} onClose={() => setShowLogin(false)} />
     </div>
   );
 }
