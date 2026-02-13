@@ -1,6 +1,6 @@
 
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/auth.jsx';
 import LoginPopup from '../components/LoginPopup';
@@ -11,7 +11,8 @@ export default function HomePage() {
   const [typed, setTyped] = useState('');
   const fullText = 'Bienvenido a la UI de usuario para nuestro proyecto backend.';
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, token } = useAuth();
+  const hasSession = Boolean(token);
 
   useEffect(() => {
     setTyped('');
@@ -35,8 +36,17 @@ export default function HomePage() {
       </div>
       <div className="home-subtitle">Inicia sesión para tener acceso al CRUD de productos.</div>
       <div className="home-btns">
-        <button className="home-btn primary" onClick={() => setShowLogin(true)}>
-          Iniciar sesión
+        <button
+          className="home-btn primary"
+          onClick={() => {
+            if (hasSession) {
+              navigate('/productos');
+              return;
+            }
+            setShowLogin(true);
+          }}
+        >
+          {hasSession ? 'Sesión iniciada' : 'Iniciar sesión'}
         </button>
         <button
           className="home-btn secondary"
@@ -48,7 +58,7 @@ export default function HomePage() {
           Entrar como invitado
         </button>
       </div>
-      <LoginPopup open={showLogin} onClose={() => setShowLogin(false)} />
+      <LoginPopup open={!hasSession && showLogin} onClose={() => setShowLogin(false)} />
     </div>
   );
 }
