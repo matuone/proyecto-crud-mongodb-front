@@ -9,15 +9,16 @@ import { useAuth } from '../auth/auth.jsx';
 
 export default function ProductsPage() {
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const isAdmin = user?.rol === 'admin';
+
   useEffect(() => {
-    if (!token) return;
     setLoading(true);
     setError(null);
     const fetchProducts = async () => {
@@ -37,7 +38,7 @@ export default function ProductsPage() {
       }
     };
     Promise.all([fetchProducts(), fetchCategories()]).finally(() => setLoading(false));
-  }, [token]);
+  }, []);
 
   const filteredProducts = Array.isArray(products)
     ? (selectedCategory
@@ -50,6 +51,16 @@ export default function ProductsPage() {
       })
       : products)
     : [];
+
+  const handleEdit = (productId) => {
+    console.log('Editar producto:', productId);
+    // TODO: Implementar edición
+  };
+
+  const handleDelete = (productId) => {
+    console.log('Eliminar producto:', productId);
+    // TODO: Implementar eliminación
+  };
 
   if (loading) return <div className="products-root" style={{ padding: 32 }}>Cargando productos...</div>;
   if (error) return <div className="products-root" style={{ color: 'red', padding: 32 }}>{error}</div>;
@@ -86,12 +97,21 @@ export default function ProductsPage() {
                 exit={{ opacity: 0, y: 40 }}
                 transition={{ duration: 0.35, type: 'spring', stiffness: 80 }}
               >
+                {isAdmin && (
+                  <div className="product-id">{prod._id}</div>
+                )}
                 <div className="product-name">{nombre}</div>
                 {typeof precio !== 'undefined' && (
                   <div className="product-price">${precio}</div>
                 )}
                 {descripcion && (
                   <div className="product-desc">{descripcion}</div>
+                )}
+                {isAdmin && (
+                  <div className="product-actions">
+                    <button className="btn-edit" onClick={() => handleEdit(prod._id)}>✏️</button>
+                    <button className="btn-delete" onClick={() => handleDelete(prod._id)}>🗑️</button>
+                  </div>
                 )}
               </motion.div>
             );

@@ -97,4 +97,4 @@ proyecto-crud-mongodb-front/
 
 ## 👨‍💻 Autor
 
-- Proyecto realizado por [Tu Nombre] para el curso Backend 2026.
+- Proyecto realizado por Matias Castells para el curso Backend 2026.

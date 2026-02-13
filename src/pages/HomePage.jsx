@@ -1,6 +1,6 @@
 
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/auth.jsx';
 import LoginPopup from '../components/LoginPopup';
@@ -14,17 +14,17 @@ export default function HomePage() {
   const { login } = useAuth();
 
   useEffect(() => {
-    let i = 0;
     setTyped('');
+    let i = 0;
     const interval = setInterval(() => {
-      setTyped((prev) =>
-        i < fullText.length ? prev + fullText[i] : prev
-      );
-      i++;
-      if (i >= fullText.length) clearInterval(interval);
+      if (i < fullText.length) {
+        i++;
+        setTyped(fullText.substring(0, i));
+      } else {
+        clearInterval(interval);
+      }
     }, 40);
     return () => clearInterval(interval);
-    // eslint-disable-next-line
   }, []);
 
   return (

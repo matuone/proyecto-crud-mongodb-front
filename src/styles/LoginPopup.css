@@ -1,0 +1,106 @@
+/* Popup login: fondo azul marino a violeta, transparente, alineado y botones acordes */
+.login-popup-container {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.92) 60%, rgba(91, 33, 182, 0.92) 100%);
+  color: #fff;
+  padding: 36px 28px 28px 28px;
+  min-width: 340px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+}
+
+.login-popup-container h2,
+.login-popup-container .MuiDialogTitle-root {
+  margin-bottom: 18px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.login-popup-container form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.login-popup-container label {
+  font-size: 1rem;
+  margin-bottom: 4px;
+  color: #cbd5e1;
+}
+
+.login-popup-container input,
+.login-popup-container .MuiInputBase-root,
+.login-popup-container select,
+.login-popup-container .MuiSelect-root {
+  padding: 8px 10px;
+  border-radius: 7px;
+  border: none;
+  background: rgba(51, 65, 85, 0.92);
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  margin-bottom: 6px;
+  width: 100%;
+}
+
+.login-popup-container input:focus,
+.login-popup-container select:focus,
+.login-popup-container .MuiInputBase-root.Mui-focused {
+  background: rgba(71, 85, 105, 0.95);
+}
+
+.login-popup-container button,
+.login-popup-container .MuiButton-containedPrimary {
+  padding: 8px 0;
+  border-radius: 7px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: linear-gradient(90deg, #2563eb 60%, #7c3aed 100%);
+  color: #fff;
+  margin-right: 8px;
+  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.10);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.login-popup-container button[type="button"],
+.login-popup-container .MuiButton-outlined {
+  background: rgba(51, 65, 85, 0.7);
+  color: #fff;
+  border: 1.5px solid #64748b;
+  margin-right: 0;
+}
+
+.login-popup-container button:disabled,
+.login-popup-container .MuiButton-containedPrimary.Mui-disabled {
+  background: #94a3b8;
+  color: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.login-popup-container .error {
+  color: #f87171;
+  margin-bottom: 8px;
+  font-size: 0.97rem;
+  text-align: center;
+}
+
+.login-popup-container .MuiDialogContent-root,
+.login-popup-container .MuiDialogActions-root {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+  padding: 0;
+}
