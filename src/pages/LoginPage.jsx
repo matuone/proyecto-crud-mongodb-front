@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useAuth } from '../auth/auth';
+import { useAuth } from '../auth/auth.jsx';
 import { useState } from 'react';
 
 export default function LoginPage() {

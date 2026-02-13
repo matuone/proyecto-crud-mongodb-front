@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useAuth } from '../auth/auth';
+import { useAuth } from '../auth/auth.jsx';
 
 export function useApi() {
   const { token } = useAuth();

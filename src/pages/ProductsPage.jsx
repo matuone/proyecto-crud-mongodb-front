@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useAuth } from '../auth/auth';
+import { useAuth } from '../auth/auth.jsx';
 
 export default function ProductsPage() {
   const { token } = useAuth();
