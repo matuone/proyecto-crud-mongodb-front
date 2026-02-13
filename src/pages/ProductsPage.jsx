@@ -4,6 +4,12 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import '../styles/ProductsPage.css';
 const API_URL = import.meta.env.VITE_API_URL;
 import { useAuth } from '../auth/auth.jsx';
@@ -17,9 +23,21 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deletingProduct, setDeletingProduct] = useState(null);
+  const [editForm, setEditForm] = useState({
+    nombre: '',
+    precio: '',
+    descripcion: '',
+  });
 
   const hasSession = Boolean(token);
   const canManageProducts = hasSession;
+  const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
   const handleLogout = () => {
     logout();
@@ -60,16 +78,86 @@ export default function ProductsPage() {
       : products)
     : [];
 
-  const handleEdit = (productId) => {
+  const handleEdit = (product) => {
     if (!canManageProducts) return;
-    console.log('Editar producto:', productId);
-    // TODO: Implementar edición
+    setError(null);
+    setEditingProduct(product);
+    setEditForm({
+      nombre: product.nombre ?? '',
+      precio: String(product.precio ?? ''),
+      descripcion: product.descripcion ?? '',
+    });
+    setEditOpen(true);
   };
 
-  const handleDelete = (productId) => {
+  const handleEditSave = async () => {
+    if (!editingProduct) return;
+
+    const newPrice = Number(editForm.precio);
+    if (Number.isNaN(newPrice)) {
+      setError('El precio debe ser un número válido');
+      return;
+    }
+
+    const payload = {
+      nombre: String(editForm.nombre).trim(),
+      precio: newPrice,
+      descripcion: String(editForm.descripcion).trim(),
+    };
+
+    if (!payload.nombre) {
+      setError('El título no puede estar vacío');
+      return;
+    }
+
+    try {
+      setEditLoading(true);
+      const res = await axios.put(`${API_URL}/productos/${editingProduct._id}`, payload, {
+        headers: authHeaders,
+      });
+
+      const updatedProduct = res.data?.producto || res.data || payload;
+
+      setProducts((prev) =>
+        prev.map((item) =>
+          item._id === editingProduct._id ? { ...item, ...updatedProduct } : item
+        )
+      );
+      setEditOpen(false);
+      setEditingProduct(null);
+    } catch (err) {
+      setError(err.response?.data?.mensaje || 'Error al editar producto');
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const handleDelete = (product) => {
     if (!canManageProducts) return;
-    console.log('Eliminar producto:', productId);
-    // TODO: Implementar eliminación
+    setError(null);
+    setDeletingProduct(product);
+    setDeleteOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingProduct) return;
+
+    try {
+      setDeleteLoading(true);
+      await axios.delete(`${API_URL}/productos/${deletingProduct._id}`, {
+        headers: authHeaders,
+      });
+
+      const refreshed = await axios.get(`${API_URL}/productos`);
+      setProducts(Array.isArray(refreshed.data) ? refreshed.data : []);
+
+      setDeleteOpen(false);
+      setDeletingProduct(null);
+    } catch (err) {
+      setError(err.response?.data?.mensaje || 'Error al eliminar producto');
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   if (loading) return <div className="products-root" style={{ padding: 32 }}>Cargando productos...</div>;
@@ -142,8 +230,8 @@ export default function ProductsPage() {
                 )}
                 {canManageProducts && (
                   <div className="product-actions">
-                    <button className="btn-edit" onClick={() => handleEdit(prod._id)}>✏️</button>
-                    <button className="btn-delete" onClick={() => handleDelete(prod._id)}>🗑️</button>
+                    <button className="btn-edit" onClick={() => handleEdit(prod)}>✏️</button>
+                    <button className="btn-delete" onClick={() => handleDelete(prod)}>🗑️</button>
                   </div>
                 )}
               </motion.div>
@@ -151,6 +239,140 @@ export default function ProductsPage() {
           })}
         </AnimatePresence>
       </div>
+
+      <Dialog
+        open={editOpen}
+        onClose={() => !editLoading && setEditOpen(false)}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            background: 'linear-gradient(135deg, rgba(30,41,59,0.98) 60%, rgba(91,33,182,0.98) 100%)',
+            color: '#fff',
+            borderRadius: 3,
+          },
+        }}
+      >
+        <DialogTitle sx={{ color: '#fff', fontWeight: 700 }}>Editar producto</DialogTitle>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
+          <TextField
+            label="Título"
+            value={editForm.nombre}
+            onChange={(e) => setEditForm((prev) => ({ ...prev, nombre: e.target.value }))}
+            fullWidth
+            margin="normal"
+            sx={{
+              mt: 1,
+              '& .MuiOutlinedInput-root': {
+                background: 'rgba(51,65,85,0.92)',
+                color: '#fff',
+                borderRadius: 2,
+                '& fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
+                '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.4)' },
+                '&.Mui-focused fieldset': { borderColor: '#7c3aed' },
+              },
+              '& .MuiInputLabel-root': { color: '#cbd5e1' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#c4b5fd' },
+            }}
+          />
+          <TextField
+            label="Precio"
+            type="number"
+            value={editForm.precio}
+            onChange={(e) => setEditForm((prev) => ({ ...prev, precio: e.target.value }))}
+            fullWidth
+            margin="normal"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                background: 'rgba(51,65,85,0.92)',
+                color: '#fff',
+                borderRadius: 2,
+                '& fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
+                '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.4)' },
+                '&.Mui-focused fieldset': { borderColor: '#7c3aed' },
+              },
+              '& .MuiInputLabel-root': { color: '#cbd5e1' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#c4b5fd' },
+            }}
+          />
+          <TextField
+            label="Descripción"
+            value={editForm.descripcion}
+            onChange={(e) => setEditForm((prev) => ({ ...prev, descripcion: e.target.value }))}
+            multiline
+            minRows={3}
+            fullWidth
+            margin="normal"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                background: 'rgba(51,65,85,0.92)',
+                color: '#fff',
+                borderRadius: 2,
+                '& fieldset': { borderColor: 'rgba(255,255,255,0.25)' },
+                '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.4)' },
+                '&.Mui-focused fieldset': { borderColor: '#7c3aed' },
+              },
+              '& .MuiInputLabel-root': { color: '#cbd5e1' },
+              '& .MuiInputLabel-root.Mui-focused': { color: '#c4b5fd' },
+            }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button onClick={() => setEditOpen(false)} disabled={editLoading} sx={{ color: '#cbd5e1' }}>Cancelar</Button>
+          <Button
+            onClick={handleEditSave}
+            variant="contained"
+            disabled={editLoading}
+            sx={{
+              background: 'linear-gradient(90deg, #2563eb 60%, #7c3aed 100%)',
+              textTransform: 'none',
+              fontWeight: 600,
+              '&:hover': { background: 'linear-gradient(90deg, #1e40af 60%, #6d28d9 100%)' },
+            }}
+          >
+            {editLoading ? 'Guardando...' : 'Guardar'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={deleteOpen}
+        onClose={() => !deleteLoading && setDeleteOpen(false)}
+        fullWidth
+        maxWidth="xs"
+        PaperProps={{
+          sx: {
+            background: 'linear-gradient(135deg, rgba(30,41,59,0.98) 60%, rgba(91,33,182,0.98) 100%)',
+            color: '#fff',
+            borderRadius: 3,
+          },
+        }}
+      >
+        <DialogTitle sx={{ color: '#fff', fontWeight: 700 }}>Eliminar producto</DialogTitle>
+        <DialogContent sx={{ color: '#cbd5e1' }}>
+          ¿Seguro que quieres eliminar
+          {deletingProduct?.nombre ? ` "${deletingProduct.nombre}"` : ' este producto'}?
+          Esta acción no se puede deshacer.
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button onClick={() => setDeleteOpen(false)} disabled={deleteLoading} sx={{ color: '#cbd5e1' }}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={confirmDelete}
+            variant="contained"
+            disabled={deleteLoading}
+            sx={{
+              background: 'linear-gradient(90deg, #ef4444 60%, #dc2626 100%)',
+              textTransform: 'none',
+              fontWeight: 600,
+              '&:hover': { background: 'linear-gradient(90deg, #dc2626 60%, #b91c1c 100%)' },
+            }}
+          >
+            {deleteLoading ? 'Eliminando...' : 'Eliminar'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
